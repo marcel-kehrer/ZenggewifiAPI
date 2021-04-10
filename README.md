@@ -1,4 +1,4 @@
-# C# Control for Zengge Wi-Fi LED bulbs
+# C# Control for Zengge Wi-Fi LED Strips ("Magic Home")
 
 ## Example usage
 
