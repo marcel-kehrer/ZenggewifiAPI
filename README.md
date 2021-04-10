@@ -40,7 +40,7 @@ state.color // Color object with current color
 bulb.SetColorRGB(255,255,255); // set new RGB color
 ```
 
-### To do's
+## To do's
 - [ ] fully implement Getstate
 - [ ] GetTimeRaw parser
 - [ ] SetTimeRaw/SetTime
