@@ -52,7 +52,7 @@ namespace ZenggewifiAPI
             //getState 81 8a 8b 96
 
             //0->81(COMMANDGETSTATE)
-            public int type;//1->33(51)(DeviceType)
+            public byte type;//1->33(51)(DeviceType)
             public bool isOn; //2->24(OFF)/23(ON)
             //int mode;//3->61(COMMANDSETMODE)
             //4->23(ON)
