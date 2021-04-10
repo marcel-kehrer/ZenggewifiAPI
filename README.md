@@ -1,4 +1,4 @@
-# C# Control for Zengge Wi-Fi LED Strips ("Magic Home")
+# C# API for Zengge Wi-Fi LED Strips ("Magic Home")
 [![CodeQL](https://github.com/itmkehrer/ZenggewifiAPI/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/itmkehrer/ZenggewifiAPI/actions/workflows/codeql-analysis.yml)
 ## Example usage
 
