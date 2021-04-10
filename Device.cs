@@ -39,12 +39,6 @@ namespace ZenggewifiAPI
             return !connection.Connected;
         }
 
-        [System.Diagnostics.ConditionalAttribute("DEBUG")]
-        public static void DebugConsoleMessage(String msg)
-        {
-            Console.WriteLine(msg);
-        }
-
         public static byte GetChecksum(byte[] inputData)
         {
             byte sum = 0;
@@ -139,7 +133,7 @@ namespace ZenggewifiAPI
             }
             try
             {
-                DebugConsoleMessage("Send setPower: " + BitConverter.ToString(sendData));
+                Console.WriteLine("Send setPower: " + BitConverter.ToString(sendData));
                 stream.Write(sendData, 0, sendData.Length);
                 return true;
             }
@@ -153,7 +147,7 @@ namespace ZenggewifiAPI
         {
             byte[] sendData;
             sendData = new byte[] { DeviceCommands.GETSTATE, DeviceCommands.GETSTATE2, DeviceCommands.GETSTATE3, GetChecksum(new byte[] { DeviceCommands.GETSTATE, DeviceCommands.GETSTATE2, DeviceCommands.GETSTATE3 }) };
-            DebugConsoleMessage("Send getState: " + BitConverter.ToString(sendData));
+            Console.WriteLine("Send getState: " + BitConverter.ToString(sendData));
             try
             {
                 stream.Write(sendData, 0, sendData.Length);
@@ -161,7 +155,7 @@ namespace ZenggewifiAPI
                 {
                     byte[] readData = new byte[connection.ReceiveBufferSize];
                     stream.Read(readData, 0, (int)connection.ReceiveBufferSize);
-                    DebugConsoleMessage("Resv getState: " + BitConverter.ToString(readData));
+                   // Console.WriteLine("Resv getState: " + BitConverter.ToString(readData));
                     return readData;
                 } else
                 {
@@ -207,7 +201,7 @@ namespace ZenggewifiAPI
             
             byte[] sendData;
             sendData = FormatColor(new Color(red, green, blue, 0, DeviceCommands.TRUE));
-            DebugConsoleMessage("Send setColorRGB: " + BitConverter.ToString(sendData));
+            Console.WriteLine("Send setColorRGB: " + BitConverter.ToString(sendData));
             if (SendChecked(sendData))
             {
                 return true;
@@ -220,7 +214,7 @@ namespace ZenggewifiAPI
         {
             byte[] sendData;
             sendData = FormatColor(new Color(0, 0, 0, white, DeviceCommands.FALSE));
-            DebugConsoleMessage("Send setColorWhite: " + BitConverter.ToString(sendData));
+            Console.WriteLine("Send setColorWhite: " + BitConverter.ToString(sendData));
             if (SendChecked(sendData))
             {
                 return true;
@@ -235,7 +229,7 @@ namespace ZenggewifiAPI
             byte[] sendData;
             sendData = new byte[] { DeviceCommands.GETTIME, DeviceCommands.GETTIME2, DeviceCommands.GETTIME3, DeviceCommands.FALSE };
             sendData = sendData.Concat(new byte[] { GetChecksum(sendData) }).ToArray();
-            DebugConsoleMessage("Send getTimeRaw: " + BitConverter.ToString(sendData));
+            Console.WriteLine("Send getTimeRaw: " + BitConverter.ToString(sendData));
             try
             {
                 stream.Write(sendData, 0, sendData.Length);
@@ -243,7 +237,7 @@ namespace ZenggewifiAPI
                 {
                     byte[] readData = new byte[connection.ReceiveBufferSize];
                     stream.Read(readData, 0, (int)connection.ReceiveBufferSize);
-                    DebugConsoleMessage("Resv getTimeRaw: " + BitConverter.ToString(readData));
+                     Console.WriteLine("Resv getTimeRaw: " + BitConverter.ToString(readData));
                     return readData; // 0f 11 14 15 04 0a 0a 2D 31 06 00 c5 // 10.4.2021 10:45:49
                     // as decimal       15 17 20 21 04 10 10 45 49 06
                     //                        2021.04.10 10:45:49
@@ -272,7 +266,7 @@ namespace ZenggewifiAPI
             byte[] sendData;
             sendData = new byte[] { DeviceCommands.GETTIMERS, DeviceCommands.GETTIMERS2, DeviceCommands.GETTIMERS3, DeviceCommands.FALSE };
             sendData = sendData.Concat(new byte[] { GetChecksum(sendData) }).ToArray();
-            DebugConsoleMessage("Send getTimersRaw: " + BitConverter.ToString(sendData));
+            Console.WriteLine("Send getTimersRaw: " + BitConverter.ToString(sendData));
             try
             {
                 stream.Write(sendData, 0, sendData.Length);
@@ -280,7 +274,7 @@ namespace ZenggewifiAPI
                 {
                     byte[] readData = new byte[connection.ReceiveBufferSize];
                     stream.Read(readData, 0, (int)connection.ReceiveBufferSize);
-                    DebugConsoleMessage("Resv getTimersRaw: " + BitConverter.ToString(readData));
+                    Console.WriteLine("Resv getTimersRaw: " + BitConverter.ToString(readData));
                     return readData; // 0F-22-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-31- and a lot of 00
                 }
                 else
