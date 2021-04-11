@@ -44,7 +44,7 @@ state.ledVersionNum // Byte version of LED
 ```C#
 bulb.GetTime(); // DateTime with current device time
 
-bulb.SetTime(DateTime.Now); // set device current time
+bulb.SetTime(DateTime.Now); // set current device time
 ```
 
 ### Set Color
@@ -54,7 +54,7 @@ bulb.SetColorRGB(255,255,255); // set new RGB color
 ```
 
 ## To do's
-- [~] fully implement Getstate
+- [ ] fully implement Getstate
 - [x] GetTime
 - [x] SetTime
 - [ ] GetTimersRaw parser
