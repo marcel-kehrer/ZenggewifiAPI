@@ -54,7 +54,7 @@ bulb.SetColorRGB(255,255,255); // set new RGB color
 ```
 
 ## To do's
-- [~] fully implement Getstate
+- [ ] fully implement Getstate
 - [x] GetTime
 - [x] SetTime
 - [ ] GetTimersRaw parser
