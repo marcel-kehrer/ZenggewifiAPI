@@ -14,7 +14,7 @@ namespace ZenggewifiAPI
         public const Int32 FALSE = 0x0F;
 
         public const Int32 SETTIME = 0x10;
-        public const Int32 SETTIME2 = 0x14;
+        //public const Int32 SETTIME2 = 0x14; -no command = 20 of year 2021
         public const Int32 GETTIME = 0x11;
         public const Int32 GETTIME2 = 0x1A;
         public const Int32 GETTIME3 = 0x1B;

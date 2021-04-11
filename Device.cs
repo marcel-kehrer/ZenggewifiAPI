@@ -13,7 +13,7 @@ namespace ZenggewifiAPI
 
         const int PORT = 5577;
         //const int TIMEOUT = 5;
-
+        const int BUFFERMIDDLE = 14;
         public Device(String hostname)
         {
             ledHost = new IPEndPoint(Dns.GetHostEntry(hostname).AddressList[0], PORT);
@@ -57,31 +57,36 @@ namespace ZenggewifiAPI
         {
             //getState 81 8a 8b 96
 
-            //0->81(COMMANDGETSTATE)
+            private byte command; //0->81(COMMANDGETSTATE)
             public byte type;//1->33(51)(DeviceType)
             public bool isOn; //2->24(OFF)/23(ON)
-            //int mode;//3->61(COMMANDSETMODE)
-            //4->23(ON)
-            //int slowness;//5->01
+            public byte mode;//3->61(COMMANDSETMODE)->97
+            private byte unknownValue1;//4->23(ON)->35
+            public byte slowness;//5->01->16
             public Color color; // 6->E6; 7->1C; 8->00; 9->00; 12->0F
-            //10->09(9)[VERSION?]; 11->00
-            //int ledVersionNum; //10->77(119)
+            public byte ledVersionNum; //10->09(9)[VERSION?]; 11->00
 
             public State(byte [] data)
             {
-
-                if(data[2] == DeviceCommands.OFF)
+                this.command = data[0];
+                this.type = data[1];
+                if (data[2] == DeviceCommands.OFF)
                 {
                     this.isOn = false;
                 } else if(data[2] == DeviceCommands.ON)
                 {
                     this.isOn = true;
                 }
-                this.type = data[1];
-                //this.mode = mode;
-                //this.slowness = slowness;
+                this.mode = data[3];
+                this.unknownValue1 = data[4];
+                this.slowness = data[5];
                 this.color = new Color(data[6], data[7], data[8], data[9], data[12]);
-                //this.ledVersionNum = ledVersionNum;
+                this.ledVersionNum = data[10];
+            }
+
+            public String GetDataAsString()
+            {
+                return "Command: " + this.command + "\n Type: " + this.type + "\n isOn: " + this.isOn + "\n Mode: " + this.mode + "\n UnknownValue: " + this.unknownValue1 + "\n Slowness: " + this.slowness + "\n Color: " + this.color + "\n ledVersionNum: " + this.ledVersionNum;
             }
 
         }
@@ -159,8 +164,8 @@ namespace ZenggewifiAPI
                 stream.Write(sendData, 0, sendData.Length);
                 if (stream.CanRead)
                 {
-                    byte[] readData = new byte[connection.ReceiveBufferSize];
-                    stream.Read(readData, 0, (int)connection.ReceiveBufferSize);
+                    byte[] readData = new byte[BUFFERMIDDLE];
+                    stream.Read(readData, 0, BUFFERMIDDLE);
                     DebugConsoleMessage("Resv getState: " + BitConverter.ToString(readData));
                     return readData;
                 } else
@@ -241,12 +246,12 @@ namespace ZenggewifiAPI
                 stream.Write(sendData, 0, sendData.Length);
                 if (stream.CanRead)
                 {
-                    byte[] readData = new byte[connection.ReceiveBufferSize];
-                    stream.Read(readData, 0, (int)connection.ReceiveBufferSize);
+                    byte[] readData = new byte[BUFFERMIDDLE];
+                    stream.Read(readData, 0, BUFFERMIDDLE);
                     DebugConsoleMessage("Resv getTimeRaw: " + BitConverter.ToString(readData));
                     return readData; // 0f 11 14 15 04 0a 0a 2D 31 06 00 c5 // 10.4.2021 10:45:49
-                    // as decimal       15 17 20 21 04 10 10 45 49 06
-                    //                        2021.04.10 10:45:49
+                    // as decimal       15 17 20 21 04 10 10 45 49 06 
+                    //                        2021.04.10 10:45:49 DayOfWeek(0-6)6=>Saturday;0=>Sunday 00(dont know what this is) Checksum
                 }
                 else
                 {
@@ -259,13 +264,50 @@ namespace ZenggewifiAPI
             }
         }
 
-        /*public Boolean SetTimeRaw() // (10 14) 15 04 0a 0a 2d 36 06 00 0f c9
+        public DateTime GetTime()
+        {
+            byte[] rawTime = GetTimeRaw();
+            int year = int.Parse(string.Concat(rawTime[2],rawTime[3]));
+            int month = rawTime[4];
+            int day = rawTime[5];
+            int hour = rawTime[6];
+            int minutes = rawTime[7];
+            int seconds = rawTime[8];
+            int dayOfWeek = rawTime[9];
+
+            DebugConsoleMessage("GetTime year: " + year + " month: "+ month+" day: "+day+"  hour: "+hour+ " minutes: "+minutes+" seconds: "+seconds+ " dayOfWeek: "+dayOfWeek);
+
+
+            return new DateTime(year, month, day, hour, minutes, seconds);
+        }
+
+        public Boolean SetTime(DateTime newTime) // (10) 14 15 04 0a 0a 2d 36 06 00 0f c9
+                                                 // 10-14-15-04-0B-0A-16-0E-00
         {
             byte[] sendData;
-            sendData = new byte[] { DeviceCommands.SETTIME, DeviceCommands.SETTIME2 }; // vorletzte ist false und letzte checksum
+            char[] yearC = newTime.Year.ToString().ToCharArray();
+            Int16 year1 = Int16.Parse(yearC[0].ToString() + yearC[1].ToString());
+            Int16 year2 = Int16.Parse(yearC[2].ToString() + yearC[3].ToString());
+
+
+            /*int year = int.Parse(string.Concat(BitConverter.GetBytes(year1)[0], BitConverter.GetBytes(year2)[0]));
+            int month = (byte)newTime.Month;
+            int day = (byte)newTime.Day;
+            int hour = (byte)newTime.Hour;
+            int minutes = (byte)newTime.Minute;
+            int seconds = (byte)newTime.Second;
+            int dayOfWeek = (byte)newTime.DayOfWeek;
+            DebugConsoleMessage("GetTime year: " + year + " month: " + month + " day: " + day + "  hour: " + hour + " minutes: " + minutes + " seconds: " + seconds + " dayOfWeek: " + dayOfWeek);*/
+
+            // dont know what the last byte 0x00 is
+            sendData = new byte[] { DeviceCommands.SETTIME, BitConverter.GetBytes(year1)[0], BitConverter.GetBytes(year2)[0], (byte)newTime.Month, (byte)newTime.Day, (byte)newTime.Hour, (byte)newTime.Minute, (byte)newTime.Second, (byte)newTime.DayOfWeek, 0x00 }; // vorletzte ist false und letzte checksum
+            DebugConsoleMessage("SendChecked SetTimeRaw: " + BitConverter.ToString(sendData));
+            SendChecked(sendData);
+
+            //the device now send back the new time a thew times, but not checked yet
 
             return false; // 0f 11 14 15 04 0a 0a 2d 36 06 00 ca
-        }*/
+        }
 
         public byte[] GetTimersRaw() // 22 2a 2b 0f 86
         {

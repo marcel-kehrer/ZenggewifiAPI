@@ -25,7 +25,7 @@ bulb.SetPower(false);
 
 ### Get State
 
-```C# Control for Zengge Wi-Fi LED bulbs
+```C#
 ZenggewifiAPI.Device.State state = bulb.GetState();
 ```
 Returns a status object which contains of these members:
@@ -34,6 +34,17 @@ Returns a status object which contains of these members:
 state.isOn // Boolean whether device is on
 state.type // Byte device type
 state.color // Color object with current color
+state.mode // Byte device mode
+state.slowness // Byte current slowness
+state.ledVersionNum // Byte version of LED
+```
+
+### Get/Set Time
+
+```C#
+bulb.GetTime(); // DateTime with current device time
+
+bulb.SetTime(DateTime.Now); // set device current time
 ```
 
 ### Set Color
@@ -43,13 +54,13 @@ bulb.SetColorRGB(255,255,255); // set new RGB color
 ```
 
 ## To do's
-- [ ] fully implement Getstate
-- [ ] GetTimeRaw parser
-- [ ] SetTimeRaw/SetTime
+- [~] fully implement Getstate
+- [x] GetTime
+- [x] SetTime
 - [ ] GetTimersRaw parser
 - [ ] SetTimersRaw
 - [ ] code improvements
-- [ ] SetColorWhite ???
+- [ ] SetColorWhite - not tested (own only a RGB device)
 - [ ] setting up new devices
 - [ ] check checksum (currently using TCP, so not important)
 - [ ] get ![image](https://user-images.githubusercontent.com/10454554/114270759-6b93cc80-9a0e-11eb-8673-127f1a282c35.png)
