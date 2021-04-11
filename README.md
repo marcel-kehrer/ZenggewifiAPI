@@ -28,7 +28,7 @@ bulb.SetPower(false);
 ```C#
 ZenggewifiAPI.Device.State state = bulb.GetState();
 ```
-Returns a status object which contains of these members:
+Returns a status object which contains these members:
 
 ```C#
 state.isOn // Boolean whether device is on

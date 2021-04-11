@@ -302,11 +302,9 @@ namespace ZenggewifiAPI
             // dont know what the last byte 0x00 is
             sendData = new byte[] { DeviceCommands.SETTIME, BitConverter.GetBytes(year1)[0], BitConverter.GetBytes(year2)[0], (byte)newTime.Month, (byte)newTime.Day, (byte)newTime.Hour, (byte)newTime.Minute, (byte)newTime.Second, (byte)newTime.DayOfWeek, 0x00 }; // vorletzte ist false und letzte checksum
             DebugConsoleMessage("SendChecked SetTimeRaw: " + BitConverter.ToString(sendData));
-            SendChecked(sendData);
+            return SendChecked(sendData); // 0f 11 14 15 04 0a 0a 2d 36 06 00 ca
 
             //the device now send back the new time a thew times, but not checked yet
-
-            return false; // 0f 11 14 15 04 0a 0a 2d 36 06 00 ca
         }
 
         public byte[] GetTimersRaw() // 22 2a 2b 0f 86
